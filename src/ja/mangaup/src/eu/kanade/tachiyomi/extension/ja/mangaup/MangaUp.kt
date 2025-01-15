@@ -1,5 +1,6 @@
 package eu.kanade.tachiyomi.extension.ja.mangaup
 
+import android.util.Log
 import eu.kanade.tachiyomi.network.GET
 import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.source.model.MangasPage
@@ -11,7 +12,6 @@ import eu.kanade.tachiyomi.util.asJsoup
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.Request
 import okhttp3.Response
-
 class MangaUp : HttpSource() {
     override val name = "マンガUP"
     override val supportsLatest: Boolean = true
@@ -104,7 +104,7 @@ class MangaUp : HttpSource() {
 
     override fun pageListParse(response: Response): List<Page> {
         return response.asJsoup().selectFirst(".fullscreen")!!.select("img").mapIndexed { i, img ->
-            Page(i, "", imageUrl = img.absUrl("src"))
+            Page(i, imageUrl = img.attr("src").replace("blob:", ""))
         }
     }
 
@@ -118,9 +118,10 @@ class MangaUp : HttpSource() {
     override fun searchMangaParse(response: Response): MangasPage {
         val mySManga = response.asJsoup().body().select("section")[1].selectFirst("div > div")!!.select("a").map {
             SManga.create().apply {
-                title = it.selectFirst("div")!!.text()
-                url = it.attr("href")
-                thumbnail_url = it.absUrl(it.select("img").attr("srcSet").substringBefore(";"))
+                title = it.selectFirst("div")!!.text()!
+                url = it.attr("href")!
+                thumbnail_url = baseUrl + it.select("img").attr("srcSet").substringBefore(";")!
+                Log.i('search', "title: $title, url: $url, thumbnail_url: $thumbnail_url")
             }
         }
         return MangasPage(mySManga, false)
@@ -128,5 +129,13 @@ class MangaUp : HttpSource() {
 
     override fun imageUrlParse(response: Response): String {
         throw UnsupportedOperationException()
+    }
+    companion object {
+        private val categories = arrayOf(
+            "All",
+        )
+        private val sortBy = arrayOf(
+            "New",
+        )
     }
 }

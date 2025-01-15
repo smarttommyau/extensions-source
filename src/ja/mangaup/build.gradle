@@ -1,6 +1,6 @@
 ext {
     extName = 'Manga UP!'
-    extClass = './MangaUp'
+    extClass = '.MangaUp'
     extVersionCode = 1
     isNsfw = true
 }
