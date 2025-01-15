@@ -1,4 +1,4 @@
-package eu.kanade.tachiyomi.extension.ja.mangaupja
+package eu.kanade.tachiyomi.extension.ja.mangaup
 
 import eu.kanade.tachiyomi.network.GET
 import eu.kanade.tachiyomi.source.model.FilterList
@@ -17,6 +17,9 @@ class MangaUp : HttpSource() {
     override val supportsLatest: Boolean = true
     override val baseUrl = "https://www.manga-up.com"
     override val lang = "ja"
+
+    override fun headersBuilder() = super.headersBuilder()
+        .add("Referer", baseUrl)
 
     override fun popularMangaRequest(page: Int): Request {
         return GET("$baseUrl/series", headers)
