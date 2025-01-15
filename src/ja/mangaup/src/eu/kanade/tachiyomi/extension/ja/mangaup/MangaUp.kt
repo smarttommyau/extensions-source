@@ -88,6 +88,7 @@ class MangaUp : HttpSource() {
                 }
             }
             description = document.select("div").last()!!.text()
+            genre = ""
             document.select("a").forEach {
                 genre += it.text() + ", "
             }
