@@ -59,7 +59,15 @@ class MangaUp : HttpSource() {
     }
 
     override fun searchMangaParse(response: Response): MangasPage {
-        TODO("Not yet implemented")
+        var My_SManga = asJsoup().body().select("selector").get(1).selectFirst("div > div").map { it ->
+            SManga.create().apply {
+                title = it.select("a > div").selectFirst("div").text()
+                url = it.select("a").attr("href")
+                thumbnail_url = it.absUrl(it.select("img").attr("srcSet").substringBefore(";"))
+            }
+        }
+        return MangasPage(My_SManga,false)
+        // TODO("Not yet implemented") 
     }
 
 
