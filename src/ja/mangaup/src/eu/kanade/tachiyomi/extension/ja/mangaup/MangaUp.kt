@@ -102,11 +102,14 @@ class MangaUp : HttpSource() {
             }
         }
     }
-
+    override fun pageListRequest(chapter: SChapter): Request {
+        return GET(chapter.url, headers)
+    }
     override fun pageListParse(response: Response): List<Page> {
-        return response.asJsoup().selectFirst(".fullscreen")!!.select("img").mapIndexed { i, img ->
+        Log.i("page", response.asJsoup().html())
+        return response.asJsoup().select(".swiper-wrapper > img").mapIndexed { i, img ->
             Log.i("page", img.attr("src").replace("blob:", ""))
-            Page(i, imageUrl = img.attr("src").replace("blob:", ""))
+            Page(i, imageUrl = baseUrl + img.attr("src").replace("blob:", ""))
         }
     }
 
