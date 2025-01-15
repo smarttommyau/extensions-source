@@ -104,6 +104,7 @@ class MangaUp : HttpSource() {
 
     override fun pageListParse(response: Response): List<Page> {
         return response.asJsoup().selectFirst(".fullscreen")!!.select("img").mapIndexed { i, img ->
+            Log.i("page", img.attr("src").replace("blob:", ""))
             Page(i, imageUrl = img.attr("src").replace("blob:", ""))
         }
     }
@@ -118,10 +119,10 @@ class MangaUp : HttpSource() {
     override fun searchMangaParse(response: Response): MangasPage {
         val mySManga = response.asJsoup().body().select("section")[1].selectFirst("div > div")!!.select("a").map {
             SManga.create().apply {
-                title = it.selectFirst("div")!!.text()!
-                url = it.attr("href")!
-                thumbnail_url = baseUrl + it.select("img").attr("srcSet").substringBefore(";")!
-                Log.i('search', "title: $title, url: $url, thumbnail_url: $thumbnail_url")
+                title = it.selectFirst("div")!!.text()
+                url = it.attr("href")
+                thumbnail_url = baseUrl + it.select("img").attr("srcSet").substringBefore(";").substringBefore(" ")
+                Log.i("search", "title: $title, url: $url, thumbnail_url: $thumbnail_url")
             }
         }
         return MangasPage(mySManga, false)
