@@ -92,10 +92,10 @@ class MangaUp : HttpSource() {
                     .addQueryParameter("q", "75")
                     .toString()
             }
-            Log.i("manga", "title: $title, thumbnail_url: $thumbnail_url")
+//            Log.i("manga", "title: $title, thumbnail_url: $thumbnail_url")
             document.select("div>div>div>div>div").forEach {
                 if (it.childrenSize() != 0) {
-                    Log.i("manga", "it: ${it.text()} ; size: ${it.childrenSize()}")
+//                    Log.i("manga", "it: ${it.text()} ; size: ${it.childrenSize()}")
                     return@forEach
                 }
                 when {
@@ -148,13 +148,6 @@ class MangaUp : HttpSource() {
                             .substringAfter("\"")
                             .substringBefore("\\\"")
                             .replace("\\u0026", "&")
-                        Log.i(
-                            "manga",
-                            "url: ${"$baseUrl/_next/image".toHttpUrl().newBuilder()
-                                .addEncodedQueryParameter("url", url)
-                                .addQueryParameter("w", "1080")
-                                .addQueryParameter("q", "75")}",
-                        )
                         myListPage += Page(
                             index = i++,
                             imageUrl = "$baseUrl/_next/image".toHttpUrl().newBuilder()
