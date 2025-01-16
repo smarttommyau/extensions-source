@@ -45,7 +45,11 @@ class MangaUp : HttpSource() {
                 val data = it.data().substringAfter("chapters\\\"").substringAfter("[").substringBefore("]")
                 data.split("},").forEach { ch ->
                     val chapter = SChapter.create().apply {
-                        name = ch.substringAfter("name").substringBefore(",").replace(Regex("[\"{}:]"), "").replace("\\", "")
+                        name = ch.substringAfter("subName").substringBefore(",").replace(Regex("[\"{}:]"), "").replace("\\", "")
+                        name = (name.isNullOrEmpty()?"":(name+" - "))+ ch.substringAfter("name").substringBefore(",").replace(Regex("[\"{}:]"), "").replace("\\", "")
+                        if(ch.substringAfter("status").substringBefore(",").contains("1")){
+                            name = name + " [VIP]"
+                        }
                         url = "$baseUrl/titles/$titleId/chapters/${ch.substringAfter("id").substringBefore(",").replace(Regex("[\"{}:]"), "").replace("\\","")}"
                         chapter_number = 1f
                         date_upload = 0
@@ -124,7 +128,8 @@ class MangaUp : HttpSource() {
                             .substringAfter("imageUrl")
                             .substringAfter(":")
                             .substringAfter("\"")
-                            .substringBefore("\"")
+                            .substringBefore("\\\"")
+                            .replace("\u0026","&")
                             add(Page.create().apply{
                                 imageUrl = "$baseUrl/_next/image".toHttpUrl().newBuilder()
                                     .addQueryEncodedQueryParameter("url", url)
