@@ -26,11 +26,11 @@ class MangaUp : HttpSource() {
         return GET("$baseUrl/series", headers)
     }
     override fun popularMangaParse(response: Response): MangasPage {
-        val mySManga = response.asJsoup().selectFirst("main")!!.select("div > section").select("a").map {
+        val mySManga = response.asJsoup().selectFirst("main")!!.select("section")[1].select("a").map {
             SManga.create().apply {
-                title = it.selectFirst("div")!!.text()
+                title = it.selectFirst("img").attr("alt")
                 url = it.attr("href")
-                thumbnail_url = it.absUrl(it.select("img").attr("srcSet").substringBefore(" "))
+                thumbnail_url = baseUrl + it.selectFirst("img").attr("srcSet").substringBefore(" ")
             }
         }
         return MangasPage(mySManga, false)
@@ -57,7 +57,12 @@ class MangaUp : HttpSource() {
         return mySChapterList
     }
 
-    override fun latestUpdatesRequest(page: Int): Request = popularMangaRequest(page)
+    override fun latestUpdatesRequest(page: Int): Request = {
+        return GET("$baseUrl/titles".toHttpUrl().newBuilder()
+            .addQueryParameter("query","new_series")
+            .toString()
+        , headers)
+    }
     override fun latestUpdatesParse(response: Response): MangasPage = popularMangaParse(response)
 
     override fun mangaDetailsRequest(manga: SManga): Request {
