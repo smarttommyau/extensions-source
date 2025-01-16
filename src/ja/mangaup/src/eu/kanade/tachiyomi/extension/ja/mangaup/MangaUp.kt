@@ -113,6 +113,7 @@ class MangaUp : HttpSource() {
         return GET(chapter.url, headers)
     }
     override fun pageListParse(response: Response): List<Page> {
+        TODO("Deal with vip chapters, login get image from app api")
         Log.i("page", response.asJsoup().html())
         return List<Page>.create().apply{
             response.asJsoup().select("script").forEach{
@@ -161,17 +162,34 @@ class MangaUp : HttpSource() {
         throw UnsupportedOperationException()
     }
     override fun getFilterList() = FilterList(
-        TopGenreGroup(),
+        // TopGenreGroup(), // /top/genres is same as /genres
         DayGroup(),// series
-        GenresGroup()
-        TitlesThemesGroup(),
+        GenresGroup(),
+        RankingsGroup(),
+        TitlesThemesGroup(), // titles?query stuffs
         TitlesMagazineGroup(),
     )
 
+    private class DayGroup : UriPartFilter(
+        "連載一覧",
+        arrayOf(
+            Pair("",""), //None
+            Pair("月曜日","/series/mon"),
+            Pair("火曜日","/series/tue"),
+            Pair("水曜日","/series/wed"),
+            Pair("木曜日","/series/thu"),
+            Pair("金曜日","/series/fri"),
+            Pair("土曜日","/series/sat"),
+            Pair("日曜日","/series/sun"),
+            Pair("完","/series/end"),
+            Pair("読切","/series/yomikiri")
+        )
+    )
 
     private class GenresGroup : UriPartFilter(
         "ジャンル一覧",
         arrayOf(
+            Pair("",""), //None
             Pair("少年","/genres/2"),
             Pair("少女","/genres/41"),
             Pair("青年","/genres/44"),
@@ -224,9 +242,34 @@ class MangaUp : HttpSource() {
         )
     )
 
+    private class RankingsGroup : UriPartFilter(
+        "ランキング",
+        arrayOf(
+            Pair("",""), //None
+            Pair("総合","/rankings/1"),
+            Pair("異世界","/rankings/2"),
+            Pair("ちょっとエロ","/rankings/3"),
+            Pair("男子向け","/rankings/4"),
+            Pair("女子向け","/rankings/4"),
+        )
+    )
+
+    private class TitlesThemesGroup : UriPartFilter(
+        "マンガＵＰ！の宣伝",
+        arrayOf(
+            Pair("",""), //None
+            Pair("広告で見かけたのはもしかしてコレ？","/titles?query=theme.theme_id%3D1"),
+            Pair("最新話を毎週読もう！","/titles?query=theme.theme_id%3D638"),
+            Pair("追い出されたアイツが最強だった件","/titles?query=theme.theme_id%3D56"),
+            Pair("戦慄のデスゲーム","/titles?query=theme.theme_id%3D43"),
+            Pair("ココロ踊る恋と青春","/titles?query=theme.theme_id%3D23")
+        )
+    )
+
     private class TitlesMagazineGroup : UriPartFilter(
         "雑誌レーベル一覧",
         arrayOf(
+            Pair("",""), //None
             Pair("マンガＵＰ！オリジナル","/titles?label_id=2"),
             Pair("ガンガンONLINE","/titles?label_id=3"),
             Pair("ガンガンJOKER","/titles?label_id=5"),
@@ -236,7 +279,7 @@ class MangaUp : HttpSource() {
             Pair("月刊少年ガンガン","/titles?label_id=9"),
             Pair("ビッグガンガン","/titles?label_id=11"),
             Pair("ヤングガンガン","/titles?label_id=12"),
-            Pair("その他","/titles?label_id=1"),
+            Pair("その他","/titles?label_id=1")
         )
      )
 }
