@@ -29,7 +29,7 @@ class MangaUp : HttpSource() {
             SManga.create().apply {
                 title = it.selectFirst("div")!!.text()
                 url = it.attr("href")
-                thumbnail_url = it.absUrl(it.select("img").attr("srcSet").substringBefore(";"))
+                thumbnail_url = it.absUrl(it.select("img").attr("srcSet").substringBefore(" "))
             }
         }
         return MangasPage(mySManga, false)
@@ -125,7 +125,7 @@ class MangaUp : HttpSource() {
             SManga.create().apply {
                 title = it.selectFirst("div")!!.text()
                 url = it.attr("href")
-                thumbnail_url = baseUrl + it.select("img").attr("srcSet").substringBefore(";").substringBefore(" ")
+                thumbnail_url = baseUrl + it.select("img").attr("srcSet").substringBefore(" ")
                 Log.i("search", "title: $title, url: $url, thumbnail_url: $thumbnail_url")
             }
         }
