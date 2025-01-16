@@ -163,11 +163,69 @@ class MangaUp : HttpSource() {
     override fun getFilterList() = FilterList(
         TopGenreGroup(),
         DayGroup(),// series
+        GenresGroup()
         TitlesThemesGroup(),
         TitlesMagazineGroup(),
     )
-     private class TitlesMagazineGroup : UriPartFilter(
-        "雑誌レーベル",
+
+
+    private class GenresGroup : UriPartFilter(
+        "ジャンル一覧",
+        arrayOf(
+            Pair("少年","/genres/2"),
+            Pair("少女","/genres/41"),
+            Pair("青年","/genres/44"),
+            Pair("女性","/genres/50"),
+            Pair("アニメ化・実写化","/genres/5"),
+            Pair("バトル・格闘・アクション","/genres/8"),
+            Pair("ファンタジー・幻想","/genres/11"),
+            Pair("4コマ","/genres/14"),
+            Pair("学園","/genres/17"),
+            Pair("エッセイ・日常・ほのぼの","/genres/20"),
+            Pair("ギャグ・コメディ","/genres/23"),
+            Pair("サスペンス","/genres/26"),
+            Pair("推理・ミステリー","/genres/29"),
+            Pair("ラブコメ","/genres/32"),
+            Pair("萌え系","/genres/35"),
+            Pair("怪奇・ホラー","/genres/38"),
+            Pair("ギャンブル","/genres/47"),
+            Pair("歴史・時代劇","/genres/53"),
+            Pair("ラブストーリー","/genres/56"),
+            Pair("職業・ビジネス","/genres/59"),
+            Pair("戦争・軍事・戦記","/genres/62"),
+            Pair("スポーツ","/genres/65"),
+            Pair("ヒューマンドラマ","/genres/68"),
+            Pair("ヤンキー・極道","/genres/71"),
+            Pair("動物・ペット・植物","/genres/74"),
+            Pair("アンソロジー・短編集","/genres/77"),
+            Pair("SF","/genres/86"),
+            Pair("教養・学習","/genres/89"),
+            Pair("料理・グルメ","/genres/92"),
+            Pair("実話・体験","/genres/95"),
+            Pair("ガールズラブ","/genres/98"),
+            Pair("旅行・紀行","/genres/101"),
+            Pair("異世界・転生","/genres/107"),
+            Pair("日常・ほのぼの","/genres/110"),
+            Pair("ボーイズラブ","/genres/113"),
+            Pair("実話・体験・エッセイ","/genres/116"),
+            Pair("お色気","/genres/124"),
+            Pair("異世界","/genres/127"),
+            Pair("百合","/genres/130"),
+            Pair("鬱展開注意","/genres/133"),
+            Pair("スローライフ","/genres/136"),
+            Pair("転生・転移","/genres/139"),
+            Pair("追放","/genres/142"),
+            Pair("王族・貴族","/genres/145"),
+            Pair("聖女・令嬢","/genres/148"),
+            Pair("冒険","/genres/151"),
+            Pair("絶望","/genres/154"),
+            Pair("読み切り","/genres/157"),
+            Pair("実写化・アニメ化","/genres/158")
+        )
+    )
+
+    private class TitlesMagazineGroup : UriPartFilter(
+        "雑誌レーベル一覧",
         arrayOf(
             Pair("マンガＵＰ！オリジナル","/titles?label_id=2"),
             Pair("ガンガンONLINE","/titles?label_id=3"),
