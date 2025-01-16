@@ -61,7 +61,7 @@ class MangaUp : HttpSource() {
                 }
             }
         }
-        return mySChapterList
+        return mySChapterList.reversed()
     }
 
     override fun latestUpdatesRequest(page: Int): Request {
@@ -102,7 +102,7 @@ class MangaUp : HttpSource() {
                     it.ownText().contains("原作") || it.text().contains("者")
                     -> {
                         author = if (author.isNullOrEmpty()) {
-                            it.select("div")[1].text().substringAfter("：").substringBefore("（")
+                            it.text().substringAfter("：").substringBefore("（")
                         } else {
                             author + ", " + it.select("div")[1].text().substringAfter("：").substringBefore("（")
                         }
@@ -110,7 +110,7 @@ class MangaUp : HttpSource() {
                     it.text().contains("漫画") || it.text().contains("著者") || it.text().contains("作画") || it.text().contains("原案")
                     -> {
                         artist = if (artist.isNullOrEmpty()) {
-                            it.select("div")[1].text().substringAfter("：").substringBefore("（")
+                            it.text().substringAfter("：").substringBefore("（")
                         } else {
                             artist + ", " + it.select("div")[1].text().substringAfter("：").substringBefore("（")
                         }
@@ -136,19 +136,25 @@ class MangaUp : HttpSource() {
         return GET(chapter.url, headers)
     }
     override fun pageListParse(response: Response): List<Page> {
-        Log.i("page", response.asJsoup().html())
         val myListPage = mutableListOf<Page>()
         response.asJsoup().select("script").forEach {
-            if (it.data().contains("mainpage")) {
+            if (it.data().contains("mainPage")) {
                 var i = 0
-                it.data().split("mainpage").drop(0).forEach { itt ->
+                it.data().split("mainPage").drop(0).forEach { itt ->
                     if (itt.contains("image")) {
                         val url = itt
                             .substringAfter("imageUrl")
                             .substringAfter(":")
                             .substringAfter("\"")
                             .substringBefore("\\\"")
-                            .replace("\u0026", "&")
+                            .replace("\\u0026", "&")
+                        Log.i(
+                            "manga",
+                            "url: ${"$baseUrl/_next/image".toHttpUrl().newBuilder()
+                                .addEncodedQueryParameter("url", url)
+                                .addQueryParameter("w", "1080")
+                                .addQueryParameter("q", "75")}",
+                        )
                         myListPage += Page(
                             index = i++,
                             imageUrl = "$baseUrl/_next/image".toHttpUrl().newBuilder()
@@ -173,13 +179,9 @@ class MangaUp : HttpSource() {
     override fun searchMangaParse(response: Response): MangasPage {
         val mySManga = response.asJsoup().body().selectFirst("section:not([class])")!!.select("a").map {
             SManga.create().apply {
-                Log.i("search", it.toString())
                 title = it.selectFirst("img")!!.attr("alt")
-                Log.i("search0", "title: $title")
                 url = it.attr("href")
-                Log.i("search1", "title: $title, url: $url")
                 thumbnail_url = baseUrl + it.selectFirst("img")!!.attr("srcset").substringBefore(" ")
-                Log.i("search2", "title: $title, url: $url, thumbnail_url: $thumbnail_url")
             }
         }
         return MangasPage(mySManga, false)
