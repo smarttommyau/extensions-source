@@ -64,10 +64,11 @@ class MangaUp : HttpSource() {
     }
     override fun mangaDetailsParse(response: Response): SManga {
         val document = response.asJsoup().selectFirst("main")!!.selectFirst("section")!!
-
+        val head = response.asJsoup().selectFirst("head")!!
         return SManga.create().apply {
             title = document.selectFirst("img")!!.attr("alt")
-            document.selectFirst("div > div > div")!!.select("div")[1].children().forEach {
+            thumbnail_url = head.selectFirst("meta[property=og:image]")!!.attr("content")
+            document.selectFirst("div > div > div")!!.select("div")[1].select("div").forEach {
                 when {
                     it.text().contains("原作") || it.text().contains("者")
                     -> {
@@ -87,7 +88,7 @@ class MangaUp : HttpSource() {
                     }
                 }
             }
-            description = document.select("div").last()!!.text()
+            description = head.selectFirst("meta[property=og:description]")!!.attr("content")
             genre = ""
             document.select("a").forEach {
                 genre += it.text() + ", "
