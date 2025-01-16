@@ -160,12 +160,25 @@ class MangaUp : HttpSource() {
     override fun imageUrlParse(response: Response): String {
         throw UnsupportedOperationException()
     }
-    companion object {
-        private val categories = arrayOf(
-            "All",
+    override fun getFilterList() = FilterList(
+        TopGenreGroup(),
+        DayGroup(),// series
+        TitlesThemesGroup(),
+        TitlesMagazineGroup(),
+    )
+     private class TitlesMagazineGroup : UriPartFilter(
+        "雑誌レーベル",
+        arrayOf(
+            Pair("マンガＵＰ！オリジナル","/titles?label_id=2"),
+            Pair("ガンガンONLINE","/titles?label_id=3"),
+            Pair("ガンガンJOKER","/titles?label_id=5"),
+            Pair("ガンガンpixiv","/titles?label_id=6"),
+            Pair("Gファンタジー","/titles?label_id=7"),
+            Pair("BLiss","/titles?label_id=8"),
+            Pair("月刊少年ガンガン","/titles?label_id=9"),
+            Pair("ビッグガンガン","/titles?label_id=11"),
+            Pair("ヤングガンガン","/titles?label_id=12"),
+            Pair("その他","/titles?label_id=1"),
         )
-        private val sortBy = arrayOf(
-            "New",
-        )
-    }
+     )
 }
