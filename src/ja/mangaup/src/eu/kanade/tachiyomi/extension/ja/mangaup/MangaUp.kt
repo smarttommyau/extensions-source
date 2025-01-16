@@ -13,6 +13,7 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.Request
 import okhttp3.Response
 class MangaUp : HttpSource() {
+    // TODO: ConfigurableSource for quality, now default 75
     override val name = "マンガUP"
     override val supportsLatest: Boolean = true
     override val baseUrl = "https://www.manga-up.com"
@@ -108,9 +109,27 @@ class MangaUp : HttpSource() {
     }
     override fun pageListParse(response: Response): List<Page> {
         Log.i("page", response.asJsoup().html())
-        return response.asJsoup().select(".swiper-wrapper > img").mapIndexed { i, img ->
-            Log.i("page", img.attr("src").replace("blob:", ""))
-            Page(i, imageUrl = baseUrl + img.attr("src").replace("blob:", ""))
+        return List<Page>.create().apply{
+            response.asJsoup().select("script").forEach{
+                if(it.data().contains("mainpage")){
+                    it.data().split("mainpage").drop(0).forEach{
+                        if(it.contains("image")){
+                            val url = it
+                            .substringAfter("imageUrl")
+                            .substringAfter(":")
+                            .substringAfter("\"")
+                            .substringBefore("\"")
+                            add(Page.create().apply{
+                                imageUrl = "$baseUrl/_next/image".toHttpUrl().newBuilder()
+                                    .addQueryEncodedQueryParameter("url", url)
+                                    .addQueryParameter("w", "1080")
+                                    .addQueryParameter("q", "75")
+                                    .toString()
+                            })
+                        }
+                    }
+                }
+            }
         }
     }
 
