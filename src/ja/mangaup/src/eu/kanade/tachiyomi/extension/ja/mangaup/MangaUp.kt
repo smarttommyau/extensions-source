@@ -26,7 +26,7 @@ class MangaUp : HttpSource() {
         return GET("$baseUrl/series", headers)
     }
     override fun popularMangaParse(response: Response): MangasPage {
-        val mySManga = response.asJsoup().selectFirst("main")!!.select("section").select("a").map {
+        val mySManga = response.asJsoup().selectFirst("main")!!.select("div > section").select("a").map {
             SManga.create().apply {
                 title = it.selectFirst("div")!!.text()
                 url = it.attr("href")
